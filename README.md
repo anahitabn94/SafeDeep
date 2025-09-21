@@ -1,32 +1,65 @@
 # SafeDeep
 
-**SafeDeep** is a scalable robustness verification framework for deep neural networks (DNNs).
+**SafeDeep** is a scalable **robustness verification framework** for deep neural networks (DNNs).  
+It analyzes whether a given network’s predictions remain **provably correct** under small input perturbations.
 
-SafeDeep gets a neural network model and a dataset for verification. The dataset should be a mat file (v4 (Level 1.0), 
-v6, and v7 to 7.2 .mat files are supported.) consisting of 1-D signals as inputs and labels. The neural network model 
-should be a binary classifier in h5 format containing dense layers with ReLU activation functions for all the hidden 
-layers. _Delta_ specifies the L∞ based perturbation, and _use_lp_ determines whether the framework should use 
-layer-by-layer bound refining.
+## Features
 
-## Requirements 
+- Verifies the robustness of **binary classifiers** with dense ReLU layers.
+- Supports **layer-by-layer bound refinement** using Gurobi MILP for tighter verification.
+- Works with **MATLAB `.mat` datasets** containing 1-D signals and corresponding labels.
+- Configurable perturbation parameter (`delta`) to specify the magnitude of input uncertainty.
 
-Gurobi's Python Interface, Python 3.9 or higher, TensorFlow 2.10 or higher.
+## Requirements
 
+- **Python** 3.9+
+- **TensorFlow** 2.10+
+- **Gurobi** with Python interface
+- Other dependencies:
+
+```bash
+pip install numpy scipy pytictoc tqdm
+```
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/anahitabn94/SafeDeep.git
+cd SafeDeep
+```
 
 ## Usage
-```python
-python main.py --net_name <path to the network file> --dataset <path to the dataset file> --delta <float between 0 and 1> --use_lp <True/False> 
+
+Run the main script:
+
+```bash
+python main.py --network <path_to_network_file> --dataset <path_to_dataset_file> --delta <float_between_0_and_1> --lp <True/False>
 ```
 
-### Example
-
-```python
-python main.py --net_name ./Model/model_patient_01.h5 --dataset ./Dataset/patient_01.mat --delta 0.01 --use_lp True 
-```
-
-### The paper results
+### Paper Results
 To replicate the paper's results, run the following code. Note that delta can be 0.005, 0.01, 0.02, and 0.04.
 
-```python
-python main.py --net_name ./Model/model_all_patients.h5 --dataset ./Dataset/all_patients.mat --delta 0.005 --use_lp True 
+```bash
+python main.py --network ./models/model_all_patients.h5 --dataset ./datasets/all_patients.mat --delta 0.005 --lp True 
 ```
+
+## Output
+
+After running the verification, the framework prints:
+
+Total samples\
+Correctly classified samples\
+Provably robust\
+Elapsed time total
+
+## Notes
+
+- **Dataset format**: `.mat` file with fields:  
+  - `dataset`: shape `(num_samples, num_features)`  
+  - `label`: shape `(num_samples, 1)` with values `0/1`  
+
+- **Model requirements**: Binary classification model with:  
+  - Dense layers only  
+  - ReLU activations for hidden layers
